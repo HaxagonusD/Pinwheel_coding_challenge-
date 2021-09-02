@@ -70,6 +70,17 @@ def parse_one_tax_form_search_data(tax_form_search_data):
         )
     return form_objects
 
+#maps html into a useful form_object
+def parse_all_search_results(results_array):
+    parsed_results = []
+
+    for results in results_array:
+        parsed_results.append(parse_one_tax_form_search_data(results))
+    
+    flattened_parsed_results = [item for sublist in parsed_results for item in sublist ]
+    return flattened_parsed_results
+
+
 def filter_data_by_tax_form(parsed_data, tax_form_name):
     def is_exact_tax_form_name(data):
         return True if data["form_number"] == tax_form_name else False 
@@ -78,13 +89,15 @@ def filter_data_by_tax_form(parsed_data, tax_form_name):
     for tax_form in filtered_data:
         print(tax_form)
     
-   
 
 
-form_w2_data = search_one_tax_form("form w2")
-print(len(form_w2_data))
-# parsed_data = parse_one_tax_form_search_data(form_w2_data)
-# filter_data_by_tax_form(parsed_data, "Form W-2")
+
+
+form_w2_data = search_one_tax_form("Form W-2")
+
+parsed_data = parse_all_search_results(form_w2_data)
+filter_data_by_tax_form(parsed_data, "Form W-2")
+
 
 
 # then given some useful objects
