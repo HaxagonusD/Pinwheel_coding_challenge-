@@ -15,19 +15,39 @@ baseurl = "https://apps.irs.gov/app/picklist/list/priorFormPublication.html"
 # Takes in the the name of one form as a string
 # Returns the search results as a string of html
 def search_one_tax_form(tax_form_name):
-    response = requests.get(
-        baseurl,
-        {
-            "value": tax_form_name,
-            "criteria": "formNumber",
-            "submitSearch": "Find",
-            "indexOfFirstRow": 0,
-            "sortColumn": "sortOrder",
-            "resultsPerPage": 25,
-            "isDescending": "false",
-        },
-    )
-    return response.text
+    search_results = []
+    without_whitespace = ''
+    index = 0
+    how_many_per_page = 25
+   
+    while(len(without_whitespace) == 0):
+        #get the html from the website 
+        response = requests.get(
+            baseurl,
+            {
+                "value": tax_form_name,
+                "criteria": "formNumber",
+                "submitSearch": "Find",
+                "indexOfFirstRow": index,
+                "sortColumn": "sortOrder",
+                "resultsPerPage": how_many_per_page,
+                "isDescending": "false",
+            },
+        )
+        #append the html string into an array to be parsed later 
+        search_results.append(response.text)
+        #determine whether or not  we can get more results 
+        #white space at the last element of pagination bottom div means that there is more results to get 
+        soup = BeautifulSoup(response.text, "html.parser")
+        pagination_bottom = soup.find("div", class_="paginationBottom")
+        last_element = pagination_bottom.contents[len(pagination_bottom.contents)-1]
+        pattern = re.compile(r'\s+')
+        without_whitespace = re.sub(pattern, '', last_element)
+
+        #go to the next page 
+        index += how_many_per_page
+    return search_results
+    
 
 
 # Then it needs a parser
@@ -61,12 +81,10 @@ def filter_data_by_tax_form(parsed_data, tax_form_name):
    
 
 
-    
-
-
 form_w2_data = search_one_tax_form("form w2")
-parsed_data = parse_one_tax_form_search_data(form_w2_data)
-filter_data_by_tax_form(parsed_data, "Form W-2")
+print(len(form_w2_data))
+# parsed_data = parse_one_tax_form_search_data(form_w2_data)
+# filter_data_by_tax_form(parsed_data, "Form W-2")
 
 
 # then given some useful objects
@@ -76,7 +94,7 @@ filter_data_by_tax_form(parsed_data, "Form W-2")
 
 #TODO
 #Get all the information on every page by searching, and parsing, and filtering 
-#The above is based on either what apge youa re on or how many entries are left in the table 
+#The above is based on either what page you are on or how many entries are left in the table 
 
 #After that I need to be able to download into a certain directory. shouldn't be that hard. I just need path and a pdf downloader library 
 
