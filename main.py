@@ -86,17 +86,48 @@ def filter_data_by_tax_form(parsed_data, tax_form_name):
         return True if data["form_number"] == tax_form_name else False 
     
     filtered_data = filter(is_exact_tax_form_name, parsed_data)
-    for tax_form in filtered_data:
-        print(tax_form)
-    
+    # for tax_form in filtered_data:
+    #     print(tax_form)
+    return list(filtered_data)
 
 
 
 
 form_w2_data = search_one_tax_form("Form W-2")
-
 parsed_data = parse_all_search_results(form_w2_data)
-filter_data_by_tax_form(parsed_data, "Form W-2")
+filtered_data = filter_data_by_tax_form(parsed_data, "Form W-2")
+
+def get_min_max_years(list_of_form_names):
+    min_max_year_results = []
+    
+    for form_name in list_of_form_names:
+        
+        form_data = search_one_tax_form(form_name)
+        parsed_data = parse_all_search_results(form_data)
+        filtered_data = filter_data_by_tax_form(parsed_data, form_name)
+        min_year = int(filtered_data[0]["year"])
+        max_year = int(filtered_data[0]["year"])
+       
+        for form in filtered_data:
+            if(int(form["year"]) > max_year):
+                max_year = int(form["year"])
+            elif(int(form["year"]) < min_year):
+                min_year = int(form["year"])
+        data_to_push = {
+            "form_number": filtered_data[0]["form_number"],
+            "form_title" : filtered_data[0]["form_title"],
+            "min_year": min_year,
+            "max_year": max_year
+        }
+
+        min_max_year_results.append(data_to_push)
+        return min_max_year_results
+
+
+
+
+
+print(get_min_max_years(["Form W-2"]))
 
 
 
