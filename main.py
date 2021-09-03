@@ -1,7 +1,8 @@
 import requests
 from bs4 import BeautifulSoup
 import re
-
+from pathlib import Path
+import sys
 
 # response = requests.get('https://httpbin.org/ip')
 
@@ -58,6 +59,7 @@ def parse_one_tax_form_search_data(tax_form_search_data):
     form_objects = []
     table_rows_list = soup.find_all("tr", class_=True)
     # print(table_rows_list[0].contents[1].contents[1].string)
+
     for table_row in table_rows_list:
         form_objects.append(
             {
@@ -66,6 +68,7 @@ def parse_one_tax_form_search_data(tax_form_search_data):
                 ).strip(),
                 "form_title": re.sub("\s+", " ", table_row.contents[3].string).strip(),
                 "year": re.sub("\s+", " ", table_row.contents[5].string).strip(),
+                "link": table_row.contents[1].contents[1]["href"]
             }
         )
     return form_objects
@@ -123,11 +126,25 @@ def get_min_max_years(list_of_form_names):
         min_max_year_results.append(data_to_push)
         return min_max_year_results
 
+def download_forms(form_name, min_year, max_year):
+    html = search_one_tax_form(form_name)
+    form_objects = parse_all_search_results(html)
+    filtered_form_objects = filter_data_by_tax_form(form_objects, form_name)
+
+    for form_object in filtered_form_objects:
+        year = int(form_object["year"])
+        if(year >= min_year and year <= max_year):
+            file = Path("downloaded_forms/"+form_name+" - "+ form_object["year"] + ".pdf")
+            response = requests.get(form_object["link"])
+            file.write_bytes(response.content)
 
 
 
 
-print(get_min_max_years(["Form W-2"]))
+
+
+# download_forms("Form W-2", 2018, 2020)
+# print(get_min_max_years(["Form W-2"]))
 
 
 
@@ -145,4 +162,4 @@ print(get_min_max_years(["Form W-2"]))
 # then I need to be able to get the min and max data for one  for one form
 #so that I can do it for multiple forms. 
 
-#After that I need to make it all worth with the commandline 
+#After that I need to make it all work with the commandline 
