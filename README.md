@@ -19,13 +19,15 @@ Commands available:
     --help
         Displays this help message 
 
-Feedback: This is a great challange because it tackles a lot of areas taht you want to test developers on. 
-    - How they problem solve
-    - Time compelxity  
-    - Their knowledge of the language and its libraries 
-    - Error handling etc
+## Feedback: 
+This is a great challange because it tackles a lot of areas that you want to test developers on. 
+- How they problem solve
+- Time compelxity  
+- Their knowledge of the language and its libraries 
+- Error handling 
+- etc
 
-A little background: 
-    - Python is not my main language right now so if you see something that's not python standard or could be done in a more "Python way" excuse my JavaScript and Node.js
-    - I didn't do a lot of error handling for this since I'm already late turning this in because I didn't see the email until a week after it was sent. I think most errors should handle themselves. Like if there is an empty object in the JSON it's proably because that exact name of the form doesn't exist on the website (I didn't handle that )
-    - 
+## A little background: 
+- Python is not my main language right now so if you see something that's not python standard or could be done in a more "Python way" excuse my JavaScript and Node.js
+- I didn't do a lot of error handling for this since I'm already late turning this in because I didn't see the email until a week after it was sent. I think most errors should handle themselves. Like if there is an empty object in the JSON it's proably because that exact name of the form doesn't exist on the website (I didn't handle that )
+- Hopefully my code reads well and can be explained with comments
